@@ -3,8 +3,42 @@ from tkinter import ttk
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg,NavigationToolbar2Tk
 from matplotlib.figure import Figure 
+from matplotlib.animation import FuncAnimation
+from matplotlib import style
+import matplotlib.pyplot as plt
+import urllib,json
+import pandas as pd
+import numpy as np
+
 
 matplotlib.use("TkAgg")
+style.use("ggplot")
+
+
+LARGE_FONT= ("Verdana", 12)
+
+
+
+
+f = Figure(figsize=(5,4),dpi=100)
+
+a = f.add_subplot(111)
+
+def animate(i):
+	data =  open("sample.txt").read().split("\n")
+
+	xvar = []
+	yvars  = []
+
+	for d in data:
+
+		if len(d)>1:
+			x,y = d.split(",")
+			xvar.append(int(x))
+			yvars.append(int(y))
+	a.clear()
+	a.plot(xvar,yvars)
+
 
 
 
@@ -18,18 +52,20 @@ class StartPage(tk.Frame):
 
 
 
-		label =ttk.Label(self,text="This is Start Page ").pack()
+		label =ttk.Label(self,text="""ALPHA Bitcoin trading application
+        use at your own risk. There is no promise
+        of warranty.""",font=LARGE_FONT).pack(padx=10,pady=10)
 
 
-		b1 = ttk.Button(self,text="Visit Page 1",command=lambda :controller.show_frame(1))
-		b2 = ttk.Button(self,text='Visit Page 2',command=lambda : controller.show_frame(2))
-		b3 = ttk.Button(self,text='Graph Page',command=lambda : controller.show_frame(3))
+		b1 = ttk.Button(self,text="Agree",command=lambda :controller.show_frame(1))
+		b2 = ttk.Button(self,text='Disagree',command=quit)
+		
 
 
 
 		b1.pack()
 		b2.pack()
-		b3.pack()
+
 
 
 
@@ -50,14 +86,10 @@ class PageOne(tk.Frame):
 
 
 		b1 = ttk.Button(self,text="< Back To Home",command=lambda :controller.show_frame(0))
-		b2 = ttk.Button(self,text='Visit Page 2',command=lambda : controller.show_frame(2))
-		b3 = ttk.Button(self,text='Graph Page',command=lambda : controller.show_frame(3))
 
 
 
 		b1.pack()
-		b2.pack()
-		b3.pack()
 
 
 		
@@ -65,7 +97,9 @@ class PageOne(tk.Frame):
 
 
 
-class PageTwo(tk.Frame):
+
+
+class BTC_PAGE(tk.Frame):
 
 	def __init__(self,parent,controller):
 
@@ -73,46 +107,13 @@ class PageTwo(tk.Frame):
 
 
 
-		label =ttk.Label(self,text="This is Page 2 ").pack()
-
-
-		b1 = ttk.Button(self,text="Back To Home",command=lambda :controller.show_frame(0))
-		b2 = ttk.Button(self,text='Visit Page 1',command=lambda : controller.show_frame(1))
-		b3 = ttk.Button(self,text='Graph Page',command=lambda : controller.show_frame(3))
-
-
-
-		b1.pack()
-		b2.pack()
-		b3.pack()
-
-
-
-
-class PageThree(tk.Frame):
-
-	def __init__(self,parent,controller):
-
-		tk.Frame.__init__(self,parent)
-
-
-
-		label =ttk.Label(self,text="Graph Wala Page").pack(padx=10,pady=10)
+		label =ttk.Label(self,text="Graph Page").pack(padx=10,pady=10)
 
 
 		b1 = ttk.Button(self,text="To Home",command=lambda :controller.show_frame(0))
-		b2 = ttk.Button(self,text='Visit Page 1',command=lambda : controller.show_frame(1))
-
-
 		b1.pack()
-		b2.pack()
 
 
-
-
-		f = Figure(figsize=(5,5),dpi=100)
-		a = f.add_subplot(111)
-		a.plot([1,2,3,4,5],[2,4,5,68,9])
 
 
 		canvas = FigureCanvasTkAgg(f,self)
@@ -126,6 +127,11 @@ class PageThree(tk.Frame):
 		toolbar.update()
 
 		canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+
+
+
+
 
 
 
@@ -151,14 +157,8 @@ class SeaofBTCapp(tk.Tk):
 		self.frames  = {}
 
 
-		frame =StartPage(container,self)
 
-		one = PageOne(container,self)
-		two = PageTwo(container,self)
-
-
-
-		pages = [StartPage,PageOne,PageTwo,PageThree]
+		pages = [StartPage,BTC_PAGE]
 
 
 
@@ -193,6 +193,12 @@ class SeaofBTCapp(tk.Tk):
 
 
 app = SeaofBTCapp()
-app.geometry("400x100")
+app.geometry("400x300")
+app.title("Nova BTC")
+
+
+ani = FuncAnimation(f,animate,interval=1000)
+plt.show()
+
 app.mainloop()
 
